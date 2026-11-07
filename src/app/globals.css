@@ -1,26 +1,444 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Night-time Lagos. Indigo is adire dye (and the suit), vermilion is the tie,
+ * ochre is the awning, pink is the wall behind the portrait.
+ *
+ * `.surface-dark` re-declares the night palette on a panel, so indigo "cloth"
+ * panels stay dark when the rest of the page is in daylight.
+ */
+:root,
+.surface-dark {
+  --paper: #07070b;
+  --paper-2: #0f0f17;
+  --paper-3: #181823;
+  --ink: #f4efe4;
+  --ink-2: #cdc7ba;
+  --muted: #8b8896;
+  --rule: #23232f;
+  --indigo: #8391ff;
+  --indigo-deep: #2b37a3;
+  --indigo-ink: #07070b;
+  --indigo-soft: #1a1e48;
+  --ochre: #ffb35c;
+  --vermilion: #ff5b3a;
+  --pink: #ffc6d3;
+  --live: #8ff0a4;
+  --on-accent: #07070b;
+  --field: #efe8d6;
+  --field-alpha: 1;
+  --cloth: #26318f;
+  --cloth-ink: #efe8d6;
+  color-scheme: dark;
+}
+
+/*
+ * Daytime Lagos (opt-in via the header toggle; night is the default): sun-bleached
+ * paper, indigo dye, and accents deepened so they still read as text on cream and
+ * as fills under white type.
+ */
+:root[data-theme="light"] {
+  --paper: #f4eee2;
+  --paper-2: #fbf8f1;
+  --paper-3: #ebe3d3;
+  --ink: #16131c;
+  --ink-2: #46414f;
+  --muted: #6f6a77;
+  --rule: #ddd4c3;
+  --indigo: #4450d0;
+  --indigo-deep: #c9cdfa;
+  --indigo-ink: #ffffff;
+  --indigo-soft: #e2e4fb;
+  --ochre: #b86200;
+  --vermilion: #c93a1a;
+  --pink: #c8406f;
+  --live: #178046;
+  --on-accent: #ffffff;
+  --field: #2b37a3;
+  --field-alpha: 1.6;
+  color-scheme: light;
+}
+.surface-dark {
+  color: var(--ink);
+}
+
+/* The theme switch wipes the new palette in from the button (see ThemeToggle). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-3: var(--paper-3);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-indigo: var(--indigo);
+  --color-indigo-deep: var(--indigo-deep);
+  --color-indigo-ink: var(--indigo-ink);
+  --color-indigo-soft: var(--indigo-soft);
+  --color-ochre: var(--ochre);
+  --color-vermilion: var(--vermilion);
+  --color-pink: var(--pink);
+  --color-live: var(--live);
+  --color-on-accent: var(--on-accent);
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-geist), ui-sans-serif, sans-serif;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  overflow-x: clip;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--paper);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background:
+    radial-gradient(60rem 40rem at 85% -10%, color-mix(in oklab, var(--indigo-deep) 38%, transparent), transparent 70%),
+    radial-gradient(50rem 30rem at -10% 30%, color-mix(in oklab, var(--vermilion) 9%, transparent), transparent 70%),
+    var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: clip;
+}
+
+/* Browser-drawn surfaces carry the palette too. */
+html {
+  scrollbar-color: var(--paper-3) var(--paper);
+  scrollbar-width: thin;
+}
+input,
+textarea {
+  caret-color: var(--ochre);
+}
+a {
+  text-underline-offset: 0.18em;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--ochre);
+  color: var(--on-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ochre);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p,
+li {
+  text-wrap: pretty;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -0.035em;
+}
+
+.font-serif {
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 350ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.link-underline:hover,
+.link-underline:focus-visible {
+  background-size: 100% 1.5px;
+}
+
+/* Spotlight that follows the pointer inside cards (--mx/--my set from JS). */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 300ms;
+  background: radial-gradient(22rem circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--indigo) 18%, transparent), transparent 60%);
+}
+.spotlight:hover::after {
+  opacity: 1;
+}
+
+.dot-grid {
+  background-image: radial-gradient(color-mix(in oklab, var(--ink) 12%, transparent) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* ===== Keyframes ===== */
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translateY(-12px) rotate(calc(var(--r, 0deg) + 4deg));
+  }
+}
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+@keyframes eq {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.7);
+  }
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Letters tumble into line. Uses translate/rotate (not transform) so hover springs still compose. */
+@keyframes kinetic-in {
+  from {
+    translate: 0 0.15em;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+.kinetic-in {
+  animation: kinetic-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.animate-marquee {
+  animation: marquee var(--speed, 40s) linear infinite;
+}
+.animate-float {
+  animation: float var(--dur, 5s) ease-in-out infinite;
+}
+.animate-spin-slow {
+  animation: spin-slow var(--dur, 28s) linear infinite;
+}
+.animate-wiggle {
+  animation: wiggle 2.4s ease-in-out infinite;
+}
+.animate-eq {
+  transform-origin: center;
+  animation: eq var(--dur, 0.9s) ease-in-out infinite;
+}
+.pulse-dot {
+  animation: pulse-dot 2.2s ease-in-out infinite;
+}
+.caret::after {
+  content: "▍";
+  margin-left: 2px;
+  color: var(--ochre);
+  animation: blink 1s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== Long-form articles ===== */
+.prose {
+  color: var(--ink-2);
+  font-size: 1.125rem;
+  line-height: 1.78;
+}
+.prose > * + * {
+  margin-top: 1.4em;
+}
+.prose h2 {
+  margin-top: 2.6em;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  color: var(--ink);
+}
+.prose h2 + * {
+  margin-top: 0.8em;
+}
+.prose h3 {
+  margin-top: 2em;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.prose strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.prose em {
+  font-style: italic;
+}
+.prose a {
+  color: var(--ochre);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.3em;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li + li {
+  margin-top: 0.45em;
+}
+.prose li::marker {
+  color: var(--ochre);
+}
+.prose blockquote {
+  margin: 2.4em 0;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, var(--indigo-deep), color-mix(in oklab, var(--indigo-deep) 55%, var(--vermilion)));
+  padding: 1.4em 1.6em;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  transform: rotate(-0.8deg);
+  box-shadow: 0 20px 50px -25px var(--indigo-deep);
+}
+.prose blockquote p {
+  margin: 0;
+}
+.prose :not(pre) > code {
+  border-radius: 6px;
+  background: var(--paper-3);
+  padding: 0.12em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  color: var(--ochre);
+}
+.prose pre {
+  margin-top: 1.6em;
+  overflow-x: auto;
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  background: var(--paper-2);
+  padding: 1.1em 1.25em;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.prose pre code {
+  font-family: inherit;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  display: block;
+  overflow-x: auto;
+}
+.prose th,
+.prose td {
+  border-bottom: 1px solid var(--rule);
+  padding: 0.65em 0.9em 0.65em 0;
+  text-align: left;
+  vertical-align: top;
+}
+.prose th {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
