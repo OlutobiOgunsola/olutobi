@@ -1,0 +1,8 @@
+"$schema" = "https://open-api.netlify.com/netlify.schema.json"
+
+# Netlify build settings for this Next.js app.
+# The Next.js runtime expects the publish directory to be `.next`, not `build`.
+# Settings here override the equivalent values configured in the Netlify UI.
+[build]
+  command = "CI= npm run build"
+  publish = ".next"
