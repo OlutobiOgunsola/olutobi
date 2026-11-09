@@ -25,6 +25,8 @@ export type Project = {
   flow: Flow;
   next?: string[];
   repo?: string;
+  /* The code exists but the repository isn't public; shown instead of a source link. */
+  privateRepo?: boolean;
   /* Slugs of essays in src/content/articles that explain this build. */
   essays?: string[];
   /* Real screenshots, served from /public/projects/<slug>/. */
@@ -374,6 +376,166 @@ export const projects: Project[] = [
         { label: "Audit log" },
       ],
     },
+  },
+  {
+    slug: "leadmonkey",
+    name: "LeadMonkey",
+    kind: "Lead research and outreach tool",
+    status: { label: "In use · local tool", tone: "live" },
+    oneLiner: "A local tool that finds small businesses whose AI-built websites need a developer, and drafts outreach to each one in the owner's language.",
+    pitch:
+      "I rebuild websites that people made with tools like Lovable, Bolt and Framer. LeadMonkey finds those sites across Italy, Germany, Portugal, Spain and Greece, checks each one for a public contact email, and turns the specific problems on each page into a short email in the local language that I review and send.",
+    scale: [
+      { value: "10", label: "countries, in priority order" },
+      { value: "9", label: "niches searched" },
+      { value: "21", label: "qualified leads from the first run" },
+    ],
+    surfaces: ["Local web UI", "CLI driven by Claude Code", "SQLite database"],
+    screenshots: [
+      {
+        src: "/projects/leadmonkey/lead-table.png",
+        alt: "LeadMonkey lead table with country, niche, website, email and status columns, a DIY badge and a needs-message badge (demo data)",
+        width: 1440,
+        height: 530,
+        device: "desktop",
+      },
+      {
+        src: "/projects/leadmonkey/lead-detail.png",
+        alt: "An expanded LeadMonkey lead showing three site issues, the Italian outreach email and its English version, each with a copy button (demo data)",
+        width: 1440,
+        height: 555,
+        device: "desktop",
+      },
+    ],
+    problem:
+      "Generic lead lists don't work for this. The useful signal is narrow: a small business whose site still runs on a builder subdomain, shares the builder's default preview image, or has no page title. Finding those by hand takes hours, and a cold email only lands if it names something real on the person's own site, in their language.",
+    built: [
+      "Search rotation: every query is logged, and each run is handed the least-used cities and the wording already tried for each niche and country",
+      "An ingest step that fetches each candidate over HTTP, falls back to a headless browser for JavaScript-only builder sites, and stores an outline of the page: title, meta tags, Open Graph image, headings, forms and builder fingerprints",
+      "Email extraction only from the site itself: mailto links, footer and contact sections, and contact, about and Impressum pages, including Cloudflare-obfuscated addresses",
+      "Deduplication by site and business name, with rejected sites remembered for 30 days",
+      "Daily and per-niche caps, so leads spread across countries in priority order",
+      "A playbook Claude Code follows to search, judge fit, find two or three concrete issues and write the email in the local language, plus an English copy",
+      "Checks that refuse a draft without real issues, a subject line or a sign-off, or with placeholders left in",
+      "A local UI with filters, a copy button for each message, and status and notes that save as you type",
+    ],
+    decisions: [
+      {
+        title: "The model writes, the code verifies",
+        body: "Claude finds candidates and writes the issues and emails, but it never handles an email address. Addresses are extracted from the site by the ingest step, so a contact can't be invented. Every draft passes checks in code before it's stored.",
+      },
+      {
+        title: "No API key, by design",
+        body: "Every keyless search endpoint I tried blocked automated requests. So search and writing run inside Claude Code, and the app owns everything that has to be deterministic: fetching, extraction, dedupe, caps and storage.",
+      },
+      {
+        title: "Issues come from the page outline",
+        body: "Each lead keeps a compact outline of what its site actually shows. An issue has to point at something in that outline, like a page declared as English while written in Italian, which keeps every email specific and checkable.",
+      },
+      {
+        title: "Path-aware site identity",
+        body: "Most builder sites live on a subdomain, but Wix and GitHub Pages sites live under a path. Site keys include the first path segment on those hosts, so two different practices on the same host are never merged as duplicates.",
+      },
+      {
+        title: "Repeats are the real limit",
+        body: "The same search returns the same sites. Logging every query and handing back the least-used cities and past wordings is what keeps a 30-a-day target workable after the first week.",
+      },
+    ],
+    stack: [
+      { label: "App", items: ["Node.js", "Express 5", "better-sqlite3", "cheerio", "Playwright"] },
+      { label: "UI", items: ["HTML, CSS and JavaScript", "No build step"] },
+      { label: "AI", items: ["Claude Code", "Playbook-driven CLI"] },
+    ],
+    flow: {
+      caption: "Claude Code searches and writes. The app fetches, verifies and stores.",
+      nodes: [
+        { label: "Claude Code", sub: "web search" },
+        { label: "Ingest", sub: "log · fetch" },
+        { label: "Extract", sub: "email · outline", accent: true },
+        { label: "Dedupe & caps", sub: "SQLite" },
+        { label: "Drafts", sub: "checked" },
+        { label: "Local UI", sub: "copy · track" },
+      ],
+      branch: { from: 2, label: "Rejected", sub: "skipped for 30 days" },
+    },
+    privateRepo: true,
+  },
+  {
+    slug: "plugin-pilot",
+    name: "Plugin Pilot",
+    kind: "Mixing assistant for music producers",
+    status: { label: "In use · local tool", tone: "live" },
+    oneLiner: "A mix guide that fixes sounds step by step using the plugins already installed on your computer.",
+    pitch:
+      "Mixing advice online assumes you own the plugin in the video. Plugin Pilot scans the AU and VST3 plugins on a Mac, then answers \"what's wrong and how do I fix it\" with steps that name a plugin you actually have, and settings to start from.",
+    scale: [
+      { value: "405", label: "plugins in the knowledge base" },
+      { value: "32", label: "sound types" },
+      { value: "29", label: "problems with step-by-step fixes" },
+    ],
+    surfaces: ["Local app (Python server)", "Static web build", "macOS plugin scanner"],
+    screenshots: [
+      {
+        src: "/projects/plugin-pilot/fix-a-sound.png",
+        alt: "Plugin Pilot's Fix a sound screen, listing vocals, guitars, bass, drums, keys, strings and whole-mix sources to choose from",
+        width: 1440,
+        height: 770,
+        device: "desktop",
+      },
+      {
+        src: "/projects/plugin-pilot/fix-steps.png",
+        alt: "Plugin Pilot's fix for a muddy lead vocal: three steps naming Pro-Q 4 with alternatives, a check for whether it worked, and what not to overdo",
+        width: 1440,
+        height: 830,
+        device: "desktop",
+      },
+    ],
+    problem:
+      "Producers collect hundreds of plugins and still reach for the same few, because nothing connects a problem like a muddy vocal to the right tool in their own library, or to the right place in the chain.",
+    built: [
+      "A scanner that reads AU and VST3 folders with macOS's built-in osascript, with nothing to install",
+      "Fix a sound: pick what you're mixing and what's wrong, and get ordered steps with the best matching plugin you own, alternatives, frequency ranges, how to check it worked and what not to overdo",
+      "A knowledge base of 405 plugins tagged by category and character, with longer notes for 149 of them",
+      "A chain builder and pair check that flag ordering and pairing problems in an insert chain",
+      "My Songs: a staged mix plan for each song, from prep and balance through buses and master, built from each track's role and the song's genre",
+      "Compare: loudness (ITU-R BS.1770), band balance, width and mono compatibility against a reference track, measured in the browser",
+      "A mix agent that answers free-text questions with Claude, using the user's own API key and recommending only plugins in their library",
+    ],
+    decisions: [
+      {
+        title: "Steps name a kind of tool, not a product",
+        body: "Each fix step asks for a category, like a dynamic EQ or an opto compressor, and the engine picks the best match from the user's library. One set of fixes works for any plugin collection.",
+      },
+      {
+        title: "Signal-flow order is data",
+        body: "Every plugin category has a position in a typical insert chain. Chain checks and the staged song plan read that order instead of hard-coding rules per plugin.",
+      },
+      {
+        title: "Audio never leaves the machine",
+        body: "Reference comparison decodes and measures audio in the browser, and only the measurements are saved. The agent calls Anthropic directly from the browser with the user's key, so no server ever holds keys or audio.",
+      },
+      {
+        title: "Two ways to run, one codebase",
+        body: "A small Python server adds the one-click scan and saves songs as JSON files in the user's Documents folder. The same app builds to a static site that keeps data in IndexedDB, for anyone who just wants it in a browser.",
+      },
+    ],
+    stack: [
+      { label: "App", items: ["JavaScript", "Web Audio API", "IndexedDB"] },
+      { label: "Local", items: ["Python", "osascript (JXA) scanner"] },
+      { label: "AI", items: ["Claude via the Anthropic SDK", "User-supplied API key"] },
+    ],
+    flow: {
+      caption: "From a problem to a chain built from your own plugins",
+      nodes: [
+        { label: "Scan", sub: "AU · VST3" },
+        { label: "Library", sub: "matched to KB" },
+        { label: "Problem", sub: "sound · issue" },
+        { label: "Engine", sub: "category → plugin", accent: true },
+        { label: "Steps", sub: "settings · checks" },
+        { label: "Chain", sub: "order check" },
+      ],
+    },
+    privateRepo: true,
   },
   {
     slug: "go-systems-lab",

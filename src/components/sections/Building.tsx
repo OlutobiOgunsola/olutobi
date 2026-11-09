@@ -62,7 +62,8 @@ export function Building() {
           <h3 className="font-display text-3xl font-extrabold lg:col-span-4">Independent</h3>
           <p className="max-w-[60ch] text-lg leading-relaxed text-ink-2 lg:col-span-8">
             A trust layer for Nigerian commerce, a strategy game with a server you can&apos;t cheat, an estate platform
-            with a WhatsApp front door, and a Go lab where I take the abstractions apart.
+            with a WhatsApp front door, a lead finder for AI-built websites, a mixing guide built on the plugins you
+            already own, and a Go lab where I take the abstractions apart.
           </p>
         </div>
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">

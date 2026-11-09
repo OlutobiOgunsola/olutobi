@@ -62,6 +62,9 @@ async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
                 Source on GitHub
               </ArrowLink>
             )}
+            {!p.repo && p.privateRepo && (
+              <p className="mt-8 text-sm text-muted">Source code is in a private repository.</p>
+            )}
           </div>
           <div className="lg:col-span-4">
             <div className="mx-auto max-w-xs overflow-hidden rounded-2xl lg:ml-auto lg:mr-0">
